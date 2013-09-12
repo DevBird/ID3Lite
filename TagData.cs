@@ -1,7 +1,11 @@
 ﻿namespace ID3Lite
 {
+    /// <summary>
+    /// Parsed Datas from ID3 Tag
+    /// </summary>
     public class TagData
     {
+        
         public string Title;
         public string Artist;
         public string Artist2;
@@ -14,7 +18,7 @@
     }
 
 
-    public class v1TagData
+    class v1TagData
     {
         public byte[] Header = new byte[3];
         public byte[] Title = new byte[30];
@@ -25,7 +29,7 @@
         public byte[] Genre = new byte[1];
     }
 
-    public class v11TagData
+    class v11TagData
     {
         public byte[] Header = new byte[3];
         public byte[] Title = new byte[30];

@@ -97,8 +97,8 @@ namespace ID3Lite
                                 }
 
                                 if (frameName == "TIT2") tagData.Title = data;
-                                if (frameName == "TPE2") tagData.Artist = data;
-                                if (frameName == "TPE1") tagData.Artist2 = data;
+                                if (frameName == "TPE1") tagData.Artist = data;
+                                if (frameName == "TPE2") tagData.Artist2 = data;
                                 if (frameName == "TALB") tagData.Album = data;
 
                             }
