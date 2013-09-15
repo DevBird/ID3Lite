@@ -129,6 +129,21 @@ namespace ID3Lite
             return tagData;
         }
 
+    public bool Write()
+    {
+        bool result = true;
+        try
+        {
+
+        }
+        catch
+        {
+            result = false;
+        }
+
+        return result;
+    }
+
         string ConvertHexToString(string HexValue)
         {
 

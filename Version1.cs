@@ -22,10 +22,64 @@ namespace ID3Lite
                     fs.Seek(-125, SeekOrigin.End);
 
                     fs.Read(versionChecker, 0, 1);
-                    tagData = Process(fs, versionChecker, tagData);
+                    fs.Seek(-128, SeekOrigin.End);
+
+                    dynamic tag;
+
+
+                    if (versionChecker[0] != 0x00)
+                    {
+                        tag = new v1TagData();
+
+                    }
+                    else
+                    {
+                        tag = new v11TagData();
+                    }
+
+                    fs.Read(tag.Header, 0, tag.Header.Length);
+                    string theTAGID = Encoding.Default.GetString(tag.Header);
+                    if (theTAGID.Equals("TAG"))
+                    {
+                        fs.Read(tag.Title, 0, tag.Title.Length);
+                        fs.Read(tag.Artist, 0, tag.Artist.Length);
+                        fs.Read(tag.Album, 0, tag.Album.Length);
+                        fs.Read(tag.Year, 0, tag.Year.Length);
+                        fs.Read(tag.Comment, 0, tag.Comment.Length);
+                        if (tag.GetType() == typeof(v11TagData))
+                        {
+                            fs.Read(tag.Separator, 0, tag.Separator.Length);
+                            fs.Read(tag.Track, 0, tag.Track.Length);
+                        }
+                        fs.Read(tag.Genre, 0, tag.Genre.Length);
+
+                        tagData.Title = Encoding.Default.GetString(RemoveNullBits(tag.Title));
+                        tagData.Artist = Encoding.Default.GetString(RemoveNullBits(tag.Artist));
+                        tagData.Album = Encoding.Default.GetString(RemoveNullBits(tag.Album));
+                        tagData.Year = Encoding.Default.GetString(RemoveNullBits(tag.Year));
+
+                    }
+
+                    return tagData;
                 }
             }
             return tagData;
+        }
+
+
+        public bool Write()
+        {
+            bool result = true;
+            try
+            {
+
+            }
+            catch
+            {
+                result = false;
+            }
+
+            return result;
         }
 
         private byte[] RemoveNullBits(byte[] source)
@@ -42,48 +96,6 @@ namespace ID3Lite
             return tmp;
         }
 
-        private TagData Process(FileStream fileStream, byte[] versionChecker, TagData tagData)
-        {
-            fileStream.Seek(-128, SeekOrigin.End);
-
-            dynamic tag;
-
-
-            if (versionChecker[0] != 0x00)
-            {
-                tag = new v1TagData();
-
-            }
-            else
-            {
-                tag = new v11TagData();
-            }
-
-            fileStream.Read(tag.Header, 0, tag.Header.Length);
-            string theTAGID = Encoding.Default.GetString(tag.Header);
-            if (theTAGID.Equals("TAG"))
-            {
-                fileStream.Read(tag.Title, 0, tag.Title.Length);
-                fileStream.Read(tag.Artist, 0, tag.Artist.Length);
-                fileStream.Read(tag.Album, 0, tag.Album.Length);
-                fileStream.Read(tag.Year, 0, tag.Year.Length);
-                fileStream.Read(tag.Comment, 0, tag.Comment.Length);
-                if (tag.GetType() == typeof(v11TagData))
-                {
-                    fileStream.Read(tag.Separator, 0, tag.Separator.Length);
-                    fileStream.Read(tag.Track, 0, tag.Track.Length);
-                }
-                fileStream.Read(tag.Genre, 0, tag.Genre.Length);
-
-                tagData.Title = Encoding.Default.GetString(RemoveNullBits(tag.Title));
-                tagData.Artist = Encoding.Default.GetString(RemoveNullBits(tag.Artist));
-                tagData.Album = Encoding.Default.GetString(RemoveNullBits(tag.Album));
-                tagData.Year = Encoding.Default.GetString(RemoveNullBits(tag.Year));
-
-            }
-
-            return tagData;
-        }
 
     }
 }

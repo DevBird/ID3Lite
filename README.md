@@ -29,7 +29,7 @@ using ID3Lite;
 ```
 -------
 ###Writing
-Not Supported Now
+Not supported in current version
 
 -------
 ###Gettable Data
