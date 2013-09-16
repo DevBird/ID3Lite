@@ -8,25 +8,27 @@ using System.Threading.Tasks;
 
 namespace ID3Lite
 {
+    public enum Revision
+    {
+        Rev0,
+        Rev1
+    }
+
+    public enum DataType
+    {
+        Title,
+        Artist,
+        Album,
+        Year,
+        Comment,
+        Track,
+        Genre,
+    }
+
     public class Version1
     {
 
-        public enum Revision
-        {
-            Rev0,
-            Rev1
-        }
-
-        public enum Type
-        {
-            Title,
-            Artist,
-            Album,
-            Year,
-            Comment,
-            Track,
-            Genre,
-        }
+       
         private string filePath;
         public Version1(string FilePath)
         {
@@ -95,7 +97,7 @@ namespace ID3Lite
 
 
 
-        public bool Write(Revision Revision, Type DataType, string Value)
+        public bool Write(Revision Revision, DataType dataType, string Value)
         {
             bool result = true;
             try
@@ -103,10 +105,10 @@ namespace ID3Lite
                 using (FileStream fs = File.OpenRead(filePath))
                 {
                     byte[] data = Encoding.UTF8.GetBytes(Value);
-                    int offset = getStartOffset(Revision, DataType);
-                    int length = getDataSize(Revision, DataType);
+                    int offset = getStartOffset(Revision, dataType);
+                    int length = getDataSize(Revision, dataType);
 
-                    if (Revision == Revision.Rev1 && DataType == Type.Track)
+                    if (Revision == Revision.Rev1 && dataType == DataType.Track)
                     {
                         byte[] Separator = { 0x00 };
                         fs.Write(Separator, offset - 1, 1);
@@ -125,11 +127,12 @@ namespace ID3Lite
 
         private byte[] RemoveNullBits(byte[] source)
         {
-            if (source.Length <= 0) return new byte[] { };
-
+            
             int i = source.Length - 1;
+            
             while (source[i] == 0)
             {
+                if (i == 0) break;
                 --i;
             }
 
@@ -139,47 +142,47 @@ namespace ID3Lite
             return tmp;
         }
 
-        private int getStartOffset(Revision Rev, Type DataType)
+        private int getStartOffset(Revision Rev, DataType dataType)
         {
             int offset = -127;
-            if (DataType == Type.Title)
+            if (dataType == DataType.Title)
                 offset += 3;
 
-            else if (DataType == Type.Artist)
+            else if (dataType == DataType.Artist)
                 offset += 33;
 
-            else if (DataType == Type.Album)
+            else if (dataType == DataType.Album)
                 offset += 63;
 
-            else if (DataType == Type.Year)
+            else if (dataType == DataType.Year)
                 offset += 93;
 
-            else if (DataType == Type.Comment)
+            else if (dataType == DataType.Comment)
                 offset += 97;
 
-            else if (Rev == Revision.Rev1 && DataType == Type.Track)
+            else if (Rev == Revision.Rev1 && dataType == DataType.Track)
                 offset += 126;
 
-            else if (DataType == Type.Genre)
+            else if (dataType == DataType.Genre)
                 offset += 127;
 
             return offset;
         }
 
-        private int getDataSize(Revision Rev, Type DataType)
+        private int getDataSize(Revision Rev, DataType dataType)
         {
             int length = 0;
 
-            if (DataType == Type.Title ||
-                DataType == Type.Artist ||
-                DataType == Type.Album ||
-                (Rev == Revision.Rev0 && DataType == Type.Comment))
+            if (dataType == DataType.Title ||
+                dataType == DataType.Artist ||
+                dataType == DataType.Album ||
+                (Rev == Revision.Rev0 && dataType == DataType.Comment))
                 length = 30;
-            else if (DataType == Type.Year)
+            else if (dataType == DataType.Year)
                 length = 4;
-            else if (Rev == Revision.Rev1 && DataType == Type.Comment)
+            else if (Rev == Revision.Rev1 && dataType == DataType.Comment)
                 length = 28;
-            else if ((Rev == Revision.Rev1 && DataType == Type.Track) || DataType == Type.Genre)
+            else if ((Rev == Revision.Rev1 && dataType == DataType.Track) || dataType == DataType.Genre)
                 length = 1;
 
             return length;
