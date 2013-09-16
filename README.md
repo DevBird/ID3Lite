@@ -53,7 +53,7 @@ using ID3Lite;
 
 #### how to check the results
 ```csharp
-If(ID3.Write(Revision.Rev1, DataType.Title, "SONG TITLE") == true)
+if(ID3.Write(Revision.Rev1, DataType.Title, "SONG TITLE") == true)
 {
     Console.WriteLine("Success! yayXD");
 }
