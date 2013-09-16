@@ -27,8 +27,6 @@ namespace ID3Lite
 
     public class Version1
     {
-
-       
         private string filePath;
         public Version1(string FilePath)
         {
@@ -89,7 +87,6 @@ namespace ID3Lite
                     }
                 }
 
-                //return tagData;
             }
             return tagData;
         }
@@ -103,22 +100,21 @@ namespace ID3Lite
             {
                 using (FileStream fs = File.OpenWrite(filePath))
                 {
-                    byte[] data = Encoding.UTF8.GetBytes(Value);
                     int offset = getStartOffset(Revision, dataType);
-                    int length = getDataSize(Revision, dataType);
 
                     if (Revision == Revision.Rev1 && dataType == DataType.Track)
                     {
                         fs.Seek(offset - 1, SeekOrigin.End);
-                        fs.WriteByte(0x00);
+                        fs.WriteByte(0x00); //for v1.1 tag Separation
 
                         byte[] intBytes = BitConverter.GetBytes(Convert.ToInt32(Value));
-                        //Array.Reverse(intBytes);
                         fs.WriteByte(intBytes[0]);
 
                     }
                     else
                     {
+                        byte[] data = Encoding.UTF8.GetBytes(Value);
+                        int length = getDataSize(Revision, dataType);
 
                         fs.Seek(offset, SeekOrigin.End);
                         for (int i = 0; i < length; i++)
@@ -129,7 +125,7 @@ namespace ID3Lite
                     }
                 }
             }
-            catch(ArgumentException e)
+            catch(Exception e)
             {
                 Console.WriteLine(e.Message);
                 result = false;
@@ -140,7 +136,6 @@ namespace ID3Lite
 
         private byte[] RemoveNullBits(byte[] source)
         {
-            
             int i = source.Length - 1;
             
             while (source[i] == 0)
