@@ -9,11 +9,17 @@ namespace ID3Lite
 {
     public class Version2
     {
+        private string filePath;
 
-    public TagData Read(string FilePath)
+        public Version2(string FilePath)
+        {
+            filePath = FilePath;
+        }
+
+        public TagData Read()
         {
             TagData tagData = new TagData();
-            using (FileStream fs = File.Open(FilePath, FileMode.Open))
+            using (FileStream fs = File.Open(filePath, FileMode.Open))
             {
                 using (BinaryReader br = new BinaryReader(fs))
                 {
@@ -100,10 +106,7 @@ namespace ID3Lite
                                 if (frameName == "TPE1") tagData.Artist = data;
                                 if (frameName == "TPE2") tagData.Artist2 = data;
                                 if (frameName == "TALB") tagData.Album = data;
-
                             }
-
-
                             else
                             {
                                 br.Read(dump, 0, 2);
@@ -129,20 +132,25 @@ namespace ID3Lite
             return tagData;
         }
 
-    public bool Write()
-    {
-        bool result = true;
-        try
+        public bool Write()
         {
+            bool result = true;
+            try
+            {
+                using (FileStream fs = File.Open(filePath, FileMode.Open))
+                {
+                    using (BinaryReader br = new BinaryReader(fs))
+                    {
+                    }
+                }
+            }
+            catch
+            {
+                result = false;
+            }
 
+            return result;
         }
-        catch
-        {
-            result = false;
-        }
-
-        return result;
-    }
 
         string ConvertHexToString(string HexValue)
         {
@@ -158,6 +166,6 @@ namespace ID3Lite
             return StrValue;
         }
 
-       
+
     }
 }

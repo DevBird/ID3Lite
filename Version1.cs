@@ -10,10 +10,22 @@ namespace ID3Lite
 {
     public class Version1
     {
-        public TagData Read(string FilePath)
+
+        enum Revision
+        {
+            Rev0,
+            Rev1
+        }
+        private string filePath;
+        public Version1(string FilePath)
+        {
+            filePath = FilePath;
+        }
+
+        public TagData Read()
         {
             TagData tagData = new TagData();
-            using (FileStream fs = File.OpenRead(FilePath))
+            using (FileStream fs = File.OpenRead(filePath))
             {
                 if (fs.Length >= 128)
                 {
@@ -66,13 +78,22 @@ namespace ID3Lite
             return tagData;
         }
 
+        
 
-        public bool Write()
+        public bool Write(Revision Revision)
         {
+            
             bool result = true;
             try
             {
+                using (FileStream fs = File.OpenRead(filePath))
+                {
+                    if (Revision == Revision.Rev0)
+                    {
 
+
+                    }
+                }
             }
             catch
             {
