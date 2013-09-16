@@ -3,20 +3,29 @@
     /// <summary>
     /// Parsed Datas from ID3 Tag
     /// </summary>
-    public class TagData
+    public class v1Data
     {
-        
         public string Title;
         public string Artist;
-        public string Artist2;
         public string Album;
         public string Year;
         public string Comment;
-        public int Genre;
-        public byte[] Cover;
-
+        public string Track;
+        public string Genre;
     }
 
+    public class v2Data
+    {
+            public string Title;
+            public string Artist;
+            public string Artist2;
+            public string Album;
+            public string Year;
+            public string Comment;
+            public int Track;
+            public int Genre;
+            public byte[] Cover;
+    }
 
     class v1TagData
     {

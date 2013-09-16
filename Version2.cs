@@ -16,9 +16,9 @@ namespace ID3Lite
             filePath = FilePath;
         }
 
-        public TagData Read()
+        public v2Data Read()
         {
-            TagData tagData = new TagData();
+            v2Data tagData = new v2Data();
             using (FileStream fs = File.Open(filePath, FileMode.Open))
             {
                 using (BinaryReader br = new BinaryReader(fs))

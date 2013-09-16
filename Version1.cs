@@ -33,58 +33,57 @@ namespace ID3Lite
             filePath = FilePath;
         }
 
-        public TagData Read()
+        public v1Data Read()
         {
-            TagData tagData = new TagData();
+            v1Data tagData = new v1Data();
             using (FileStream fs = File.OpenRead(filePath))
             {
-                if (fs.Length >= 128)
+                Byte[] versionChecker = new byte[1];
+
+                fs.Seek(-3, SeekOrigin.End);
+
+                fs.Read(versionChecker, 0, 1);
+                fs.Seek(-128, SeekOrigin.End);
+
+                dynamic tag;
+
+                Console.WriteLine(versionChecker[0].ToString());
+                if (versionChecker[0] != 0x00)
                 {
-                    Byte[] versionChecker = new byte[1];
+                    tag = new v1TagData();
 
-                    fs.Seek(-125, SeekOrigin.End);
-
-                    fs.Read(versionChecker, 0, 1);
-                    fs.Seek(-128, SeekOrigin.End);
-                    
-                    dynamic tag;
-
-
-                    if (versionChecker[0] != 0x00)
-                    {
-                        tag = new v1TagData();
-
-                    }
-                    else
-                    {
-                        tag = new v11TagData();
-                    }
-
-                    fs.Read(tag.Header, 0, tag.Header.Length);
-                    string theTAGID = Encoding.Default.GetString(tag.Header);
-                    if (theTAGID.Equals("TAG"))
-                    {
-                        fs.Read(tag.Title, 0, tag.Title.Length);
-                        fs.Read(tag.Artist, 0, tag.Artist.Length);
-                        fs.Read(tag.Album, 0, tag.Album.Length);
-                        fs.Read(tag.Year, 0, tag.Year.Length);
-                        fs.Read(tag.Comment, 0, tag.Comment.Length);
-                        if (tag.GetType() == typeof(v11TagData))
-                        {
-                            fs.Read(tag.Separator, 0, tag.Separator.Length);
-                            fs.Read(tag.Track, 0, tag.Track.Length);
-                        }
-                        fs.Read(tag.Genre, 0, tag.Genre.Length);
-
-                        tagData.Title = Encoding.Default.GetString(RemoveNullBits(tag.Title));
-                        tagData.Artist = Encoding.Default.GetString(RemoveNullBits(tag.Artist));
-                        tagData.Album = Encoding.Default.GetString(RemoveNullBits(tag.Album));
-                        tagData.Year = Encoding.Default.GetString(RemoveNullBits(tag.Year));
-
-                    }
-
-                    return tagData;
                 }
+                else
+                {
+                    tag = new v11TagData();
+                }
+                Console.WriteLine(tag.GetType().ToString());
+                fs.Read(tag.Header, 0, tag.Header.Length);
+                string theTAGID = Encoding.Default.GetString(tag.Header);
+                if (theTAGID.Equals("TAG"))
+                {
+                    fs.Read(tag.Title, 0, tag.Title.Length);
+                    fs.Read(tag.Artist, 0, tag.Artist.Length);
+                    fs.Read(tag.Album, 0, tag.Album.Length);
+                    fs.Read(tag.Year, 0, tag.Year.Length);
+                    fs.Read(tag.Comment, 0, tag.Comment.Length);
+                    if (tag.GetType() == typeof(v11TagData))
+                    {
+                        fs.Read(tag.Separator, 0, tag.Separator.Length);
+                        fs.Read(tag.Track, 0, tag.Track.Length);
+                        tagData.Track = Encoding.Default.GetString(tag.Track);
+                    }
+                    fs.Read(tag.Genre, 0, tag.Genre.Length);
+                    
+                    tagData.Title = Encoding.Default.GetString(RemoveNullBits(tag.Title));
+                    tagData.Artist = Encoding.Default.GetString(RemoveNullBits(tag.Artist));
+                    tagData.Album = Encoding.Default.GetString(RemoveNullBits(tag.Album));
+                    tagData.Year = Encoding.Default.GetString(RemoveNullBits(tag.Year));
+                    tagData.Comment = Encoding.Default.GetString(RemoveNullBits(tag.Comment));
+                    tagData.Genre = Encoding.Default.GetString(tag.Genre);
+                }
+
+                //return tagData;
             }
             return tagData;
         }
@@ -93,16 +92,15 @@ namespace ID3Lite
 
         public bool Write(Revision Revision, Type DataType, string Value)
         {
-            
             bool result = true;
             try
             {
                 using (FileStream fs = File.OpenRead(filePath))
                 {
                     byte[] data = Encoding.UTF8.GetBytes(Value);
-                    int offset = getStartOffset(Revision,DataType);
-                    int length = getDataSize(Revision,DataType);
-                    
+                    int offset = getStartOffset(Revision, DataType);
+                    int length = getDataSize(Revision, DataType);
+
                     if (Revision == Revision.Rev1 && DataType == Type.Track)
                     {
                         byte[] Separator = { 0x00 };
@@ -136,25 +134,25 @@ namespace ID3Lite
 
         private int getStartOffset(Revision Rev, Type DataType)
         {
-            int offset = -128;
+            int offset = -127;
             if (DataType == Type.Title)
                 offset += 3;
-            
+
             else if (DataType == Type.Artist)
                 offset += 33;
-            
+
             else if (DataType == Type.Album)
                 offset += 63;
-            
+
             else if (DataType == Type.Year)
                 offset += 93;
-            
+
             else if (DataType == Type.Comment)
                 offset += 97;
-            
+
             else if (Rev == Revision.Rev1 && DataType == Type.Track)
                 offset += 126;
-            
+
             else if (DataType == Type.Genre)
                 offset += 127;
 
