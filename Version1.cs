@@ -66,12 +66,13 @@ namespace ID3Lite
                     fs.Read(tag.Artist, 0, tag.Artist.Length);
                     fs.Read(tag.Album, 0, tag.Album.Length);
                     fs.Read(tag.Year, 0, tag.Year.Length);
+                    
                     fs.Read(tag.Comment, 0, tag.Comment.Length);
                     if (tag.GetType() == typeof(v11TagData))
                     {
                         fs.Read(tag.Separator, 0, tag.Separator.Length);
                         fs.Read(tag.Track, 0, tag.Track.Length);
-                        tagData.Track = Encoding.Default.GetString(tag.Track);
+                        tagData.Track = tag.Track[0].ToString();
                     }
                     fs.Read(tag.Genre, 0, tag.Genre.Length);
                     
@@ -80,7 +81,11 @@ namespace ID3Lite
                     tagData.Album = Encoding.Default.GetString(RemoveNullBits(tag.Album));
                     tagData.Year = Encoding.Default.GetString(RemoveNullBits(tag.Year));
                     tagData.Comment = Encoding.Default.GetString(RemoveNullBits(tag.Comment));
-                    tagData.Genre = Encoding.Default.GetString(tag.Genre);
+                    
+                    if (tag.Genre[0] != 0xff)
+                    {
+                        tagData.Genre = tag.Genre[0].ToString();
+                    }
                 }
 
                 //return tagData;
