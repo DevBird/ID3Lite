@@ -49,7 +49,6 @@ namespace ID3Lite
 
                 dynamic tag;
 
-                Console.WriteLine(versionChecker[0].ToString());
                 if (versionChecker[0] != 0x00)
                 {
                     tag = new v1TagData();
@@ -59,7 +58,7 @@ namespace ID3Lite
                 {
                     tag = new v11TagData();
                 }
-                Console.WriteLine(tag.GetType().ToString());
+
                 fs.Read(tag.Header, 0, tag.Header.Length);
                 string theTAGID = Encoding.Default.GetString(tag.Header);
                 if (theTAGID.Equals("TAG"))
@@ -102,7 +101,7 @@ namespace ID3Lite
             bool result = true;
             try
             {
-                using (FileStream fs = File.OpenRead(filePath))
+                using (FileStream fs = File.OpenWrite(filePath))
                 {
                     byte[] data = Encoding.UTF8.GetBytes(Value);
                     int offset = getStartOffset(Revision, dataType);
@@ -110,15 +109,29 @@ namespace ID3Lite
 
                     if (Revision == Revision.Rev1 && dataType == DataType.Track)
                     {
-                        byte[] Separator = { 0x00 };
-                        fs.Write(Separator, offset - 1, 1);
-                    }
+                        fs.Seek(offset - 1, SeekOrigin.End);
+                        fs.WriteByte(0x00);
 
-                    fs.Write(data, offset, length);
+                        byte[] intBytes = BitConverter.GetBytes(Convert.ToInt32(Value));
+                        //Array.Reverse(intBytes);
+                        fs.WriteByte(intBytes[0]);
+
+                    }
+                    else
+                    {
+
+                        fs.Seek(offset, SeekOrigin.End);
+                        for (int i = 0; i < length; i++)
+                        {
+                            if (i >= data.Length) fs.WriteByte(0x00);
+                            else fs.WriteByte(data[i]);
+                        }
+                    }
                 }
             }
-            catch
+            catch(ArgumentException e)
             {
+                Console.WriteLine(e.Message);
                 result = false;
             }
 
@@ -144,7 +157,7 @@ namespace ID3Lite
 
         private int getStartOffset(Revision Rev, DataType dataType)
         {
-            int offset = -127;
+            int offset = -128;
             if (dataType == DataType.Title)
                 offset += 3;
 
