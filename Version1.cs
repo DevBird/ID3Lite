@@ -11,13 +11,13 @@ namespace ID3Lite
     public class Version1
     {
 
-        enum Revision
+        public enum Revision
         {
             Rev0,
             Rev1
         }
 
-        enum Type
+        public enum Type
         {
             Title,
             Artist,
