@@ -16,6 +16,17 @@ namespace ID3Lite
             Rev0,
             Rev1
         }
+
+        enum Type
+        {
+            Title,
+            Artist,
+            Album,
+            Year,
+            Comment,
+            Track,
+            Genre,
+        }
         private string filePath;
         public Version1(string FilePath)
         {
@@ -35,7 +46,7 @@ namespace ID3Lite
 
                     fs.Read(versionChecker, 0, 1);
                     fs.Seek(-128, SeekOrigin.End);
-
+                    
                     dynamic tag;
 
 
@@ -78,9 +89,9 @@ namespace ID3Lite
             return tagData;
         }
 
-        
 
-        public bool Write(Revision Revision)
+
+        public bool Write(Revision Revision, Type DataType, string Value)
         {
             
             bool result = true;
@@ -88,11 +99,17 @@ namespace ID3Lite
             {
                 using (FileStream fs = File.OpenRead(filePath))
                 {
-                    if (Revision == Revision.Rev0)
+                    byte[] data = Encoding.UTF8.GetBytes(Value);
+                    int offset = getStartOffset(Revision,DataType);
+                    int length = getDataSize(Revision,DataType);
+                    
+                    if (Revision == Revision.Rev1 && DataType == Type.Track)
                     {
-
-
+                        byte[] Separator = { 0x00 };
+                        fs.Write(Separator, offset - 1, 1);
                     }
+
+                    fs.Write(data, offset, length);
                 }
             }
             catch
@@ -117,6 +134,50 @@ namespace ID3Lite
             return tmp;
         }
 
+        private int getStartOffset(Revision Rev, Type DataType)
+        {
+            int offset = -128;
+            if (DataType == Type.Title)
+                offset += 3;
+            
+            else if (DataType == Type.Artist)
+                offset += 33;
+            
+            else if (DataType == Type.Album)
+                offset += 63;
+            
+            else if (DataType == Type.Year)
+                offset += 93;
+            
+            else if (DataType == Type.Comment)
+                offset += 97;
+            
+            else if (Rev == Revision.Rev1 && DataType == Type.Track)
+                offset += 126;
+            
+            else if (DataType == Type.Genre)
+                offset += 127;
 
+            return offset;
+        }
+
+        private int getDataSize(Revision Rev, Type DataType)
+        {
+            int length = 0;
+
+            if (DataType == Type.Title ||
+                DataType == Type.Artist ||
+                DataType == Type.Album ||
+                (Rev == Revision.Rev0 && DataType == Type.Comment))
+                length = 30;
+            else if (DataType == Type.Year)
+                length = 4;
+            else if (Rev == Revision.Rev1 && DataType == Type.Comment)
+                length = 28;
+            else if ((Rev == Revision.Rev1 && DataType == Type.Track) || DataType == Type.Genre)
+                length = 1;
+
+            return length;
+        }
     }
 }
