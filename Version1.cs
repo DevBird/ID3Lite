@@ -125,6 +125,8 @@ namespace ID3Lite
 
         private byte[] RemoveNullBits(byte[] source)
         {
+            if (source.Length <= 0) return new byte[] { };
+
             int i = source.Length - 1;
             while (source[i] == 0)
             {
