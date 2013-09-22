@@ -274,7 +274,7 @@ namespace ID3Lite
                         }
 
                     }
-                    else if (Revision == Revision.Rev1 && dataType == DataType.Genre)
+                    else if (dataType == DataType.Genre)
                     {
                         try
                         {
