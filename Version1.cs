@@ -239,7 +239,7 @@ namespace ID3Lite
                     
                     if (tag.Genre[0] != 0xff)
                     {
-                        tagData.Genre = GenretoString(tag.Genre[0]);;
+                        tagData.Genre = GenretoString(tag.Genre[0]);
                     }
                 }
 
