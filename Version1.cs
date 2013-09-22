@@ -71,7 +71,10 @@ namespace ID3Lite
                     {
                         fs.Read(tag.Separator, 0, tag.Separator.Length);
                         fs.Read(tag.Track, 0, tag.Track.Length);
-                        tagData.Track = tag.Track[0].ToString();
+                        if (tag.Track[0] != 0x00)
+                        {
+                            tagData.Track = tag.Track[0].ToString();
+                        }
                     }
                     fs.Read(tag.Genre, 0, tag.Genre.Length);
                     
@@ -107,8 +110,15 @@ namespace ID3Lite
                         fs.Seek(offset - 1, SeekOrigin.End);
                         fs.WriteByte(0x00); //for v1.1 tag Separation
 
-                        byte[] intBytes = BitConverter.GetBytes(Convert.ToInt32(Value));
-                        fs.WriteByte(intBytes[0]);
+                        if (String.IsNullOrEmpty(Value))
+                        {
+                            fs.WriteByte(0x00);
+                        }
+                        else
+                        {
+                            byte[] intBytes = BitConverter.GetBytes(Convert.ToInt32(Value));
+                            fs.WriteByte(intBytes[0]);
+                        }
 
                     }
                     else
