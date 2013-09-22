@@ -276,9 +276,15 @@ namespace ID3Lite
                     }
                     else if (dataType == DataType.Genre)
                     {
+                        int gnre;
                         try
                         {
-                            int gnre = Convert.ToInt32(Value);
+                            gnre = Convert.ToInt32(Value);
+                        }
+                        catch (FormatException e)
+                        {
+                            gnre = StringtoGenre(Value);
+                        }
                             byte[] data = BitConverter.GetBytes(gnre);
                             int length = getDataSize(Revision, dataType);
 
@@ -288,12 +294,6 @@ namespace ID3Lite
                                 if (i >= data.Length) fs.WriteByte(0x00);
                                 else fs.WriteByte(data[i]);
                             }
-                        }
-                        catch (FormatException e)
-                        {
-                            Console.WriteLine("Wrong Format" + e.Message);
-                        }
-
                     }
                     else
                     {
