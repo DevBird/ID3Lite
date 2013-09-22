@@ -47,7 +47,7 @@ using ID3Lite;
  ID3.Write(Revision.Rev1, DataType.Comment, "nice stuff. bro");
  ID3.Write(Revision.Rev1, DataType.Year, "2013");
  ID3.Write(Revision.Rev1, DataType.Track, "4");
- // can't Genre data writing in current version.
+ ID3.Write(Revision.Rev1, DataType.Genre, "Genrecode or Genre");
 
 ```
 
