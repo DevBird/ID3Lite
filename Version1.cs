@@ -113,7 +113,7 @@ namespace ID3Lite
                     }
                     else
                     {
-                        byte[] data = Encoding.UTF8.GetBytes(Value);
+                        byte[] data = Encoding.Default.GetBytes(Value);
                         int length = getDataSize(Revision, dataType);
 
                         fs.Seek(offset, SeekOrigin.End);
