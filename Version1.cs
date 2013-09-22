@@ -17,7 +17,7 @@ namespace ID3Lite
     {
         #region
         public static List<string> genres =
-			new List<string>( new string[] { "Blues",					// 0
+            new List<string>(new string[] { "Blues",					// 0
 											 "Classic Rock",
 											 "Country",
 											 "Dance",
@@ -164,8 +164,8 @@ namespace ID3Lite
 											 "Thrash Metal",
 											 "Anime",
 											 "JPop",
-											 "Synthpop" } );			// 147
-		#endregion
+											 "Synthpop" });			// 147
+        #endregion
     }
     public enum DataType
     {
@@ -218,7 +218,7 @@ namespace ID3Lite
                     fs.Read(tag.Artist, 0, tag.Artist.Length);
                     fs.Read(tag.Album, 0, tag.Album.Length);
                     fs.Read(tag.Year, 0, tag.Year.Length);
-                    
+
                     fs.Read(tag.Comment, 0, tag.Comment.Length);
                     if (tag.GetType() == typeof(v11TagData))
                     {
@@ -230,13 +230,13 @@ namespace ID3Lite
                         }
                     }
                     fs.Read(tag.Genre, 0, tag.Genre.Length);
-                    
+
                     tagData.Title = Encoding.Default.GetString(RemoveNullBits(tag.Title));
                     tagData.Artist = Encoding.Default.GetString(RemoveNullBits(tag.Artist));
                     tagData.Album = Encoding.Default.GetString(RemoveNullBits(tag.Album));
                     tagData.Year = Encoding.Default.GetString(RemoveNullBits(tag.Year));
                     tagData.Comment = Encoding.Default.GetString(RemoveNullBits(tag.Comment));
-                    
+
                     if (tag.Genre[0] != 0xff)
                     {
                         tagData.Genre = GenretoString(tag.Genre[0]);
@@ -276,24 +276,27 @@ namespace ID3Lite
                     }
                     else if (dataType == DataType.Genre)
                     {
-                        int gnre;
+                        int genre;
                         try
                         {
-                            gnre = Convert.ToInt32(Value);
+                            genre = Convert.ToInt32(Value);
                         }
                         catch (FormatException e)
                         {
-                            gnre = StringtoGenre(Value);
+                            genre = StringtoGenre(Value);
                         }
-                            byte[] data = BitConverter.GetBytes(gnre);
-                            int length = getDataSize(Revision, dataType);
+                        
+                        if (genre == -1 || genre > 147) return false; //do not write when got wrong value
 
-                            fs.Seek(offset, SeekOrigin.End);
-                            for (int i = 0; i < length; i++)
-                            {
-                                if (i >= data.Length) fs.WriteByte(0x00);
-                                else fs.WriteByte(data[i]);
-                            }
+                        byte[] data = BitConverter.GetBytes(genre);
+                        int length = getDataSize(Revision, dataType);
+
+                        fs.Seek(offset, SeekOrigin.End);
+                        for (int i = 0; i < length; i++)
+                        {
+                            if (i >= data.Length) fs.WriteByte(0x00);
+                            else fs.WriteByte(data[i]);
+                        }
                     }
                     else
                     {
@@ -309,7 +312,7 @@ namespace ID3Lite
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 result = false;
@@ -319,25 +322,24 @@ namespace ID3Lite
         }
         public string GenretoString(int input)
         {
-            if (input == null) return null;
             if (input > 147) return null;
             string Gen = Genres.genres[input];
             return Gen;
         }
         public int StringtoGenre(string input)
         {
-          Predicate<string> predicate = new Predicate<string>(delegate(string other)
-              {
-                  return other.Equals(input, StringComparison.InvariantCultureIgnoreCase);
-              }
-           );
+            Predicate<string> predicate = new Predicate<string>(delegate(string other)
+                {
+                    return other.Equals(input, StringComparison.InvariantCultureIgnoreCase);
+                }
+             );
             return Genres.genres.FindIndex(predicate);
         }
 
         private byte[] RemoveNullBits(byte[] source)
         {
             int i = source.Length - 1;
-            
+
             while (source[i] == 0)
             {
                 if (i == 0) break;
