@@ -317,6 +317,22 @@ namespace ID3Lite
 
             return result;
         }
+        public string GenretoString(int input)
+        {
+            if (input == null) return null;
+            if (input > 147) return null;
+            string Gen = Genres.genres[input];
+            return Gen;
+        }
+        public int StringtoGenre(string input)
+        {
+          Predicate<string> predicate = new Predicate<string>(delegate(string other)
+              {
+                  return other.Equals(input, StringComparison.InvariantCultureIgnoreCase);
+              }
+           );
+            return Genres.genres.FindIndex(predicate);
+        }
 
         private byte[] RemoveNullBits(byte[] source)
         {
