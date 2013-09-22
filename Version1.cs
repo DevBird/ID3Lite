@@ -274,6 +274,27 @@ namespace ID3Lite
                         }
 
                     }
+                    else if (Revision == Revision.Rev1 && dataType == DataType.Genre)
+                    {
+                        try
+                        {
+                            int gnre = Convert.ToInt32(Value);
+                            byte[] data = BitConverter.GetBytes(gnre);
+                            int length = getDataSize(Revision, dataType);
+
+                            fs.Seek(offset, SeekOrigin.End);
+                            for (int i = 0; i < length; i++)
+                            {
+                                if (i >= data.Length) fs.WriteByte(0x00);
+                                else fs.WriteByte(data[i]);
+                            }
+                        }
+                        catch (FormatException e)
+                        {
+                            Console.WriteLine("Wrong Format" + e.Message);
+                        }
+
+                    }
                     else
                     {
                         byte[] data = Encoding.Default.GetBytes(Value);
