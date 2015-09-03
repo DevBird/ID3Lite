@@ -239,7 +239,7 @@ namespace ID3Lite
 
                     if (tag.Genre[0] != 0xff)
                     {
-                        tagData.Genre = GenretoString(tag.Genre[0]);
+                        tagData.Genre = genreToString(tag.Genre[0]);
                     }
                 }
 
@@ -283,7 +283,7 @@ namespace ID3Lite
                         }
                         catch (FormatException e)
                         {
-                            genre = StringtoGenre(Value);
+                            genre = stringToGenre(Value);
                         }
                         
                         if (genre == -1 || genre > 147) return false; //do not write when got wrong value
@@ -320,13 +320,13 @@ namespace ID3Lite
 
             return result;
         }
-        public string GenretoString(int input)
+        private string genreToString(int input)
         {
             if (input > 147) return null;
             string Gen = Genres.genres[input];
             return Gen;
         }
-        public int StringtoGenre(string input)
+        private int stringToGenre(string input)
         {
             Predicate<string> predicate = new Predicate<string>(delegate(string other)
                 {
