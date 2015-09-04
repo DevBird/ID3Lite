@@ -13,6 +13,7 @@ namespace ID3Lite
         Dictionary<string, byte[]> frames;
         string filePath;
 
+        /* internal variables for CoverArt */
         static bool _isExist = false;
         static string _MIME = String.Empty;
         static PictureType _PictureType = 0;
@@ -41,6 +42,7 @@ namespace ID3Lite
             }
         }
 
+        #region Enums
         private enum Flag
         {
             TagAlterPreservation = 0x8000,
@@ -75,6 +77,7 @@ namespace ID3Lite
             ArtistLogotype = 0x13,
             PublisherLogotype = 0x14
         }
+        #endregion
 
         public ID3Lite(string _filePath)
         {
@@ -106,7 +109,6 @@ namespace ID3Lite
                 }
 
                 ulong totalSize = (ulong)(size[0] * 0x200000 + size[1] * 0x4000 + size[2] * 0x80 + size[3]);
-
                 byte buff;
 
                 while (totalSize > 10)
@@ -150,8 +152,8 @@ namespace ID3Lite
 
                 fs.Close();
             }
-            //parse cover art data;
 
+            //parse cover art data;
             if (frames.ContainsKey("APIC"))
             {
                 _isExist = true;
@@ -179,6 +181,35 @@ namespace ID3Lite
             }
         }
 
+        public void Write()
+        {
+            byte[] data, totalLength = new byte[4];
+            long fullLength;
+            int i;
+
+            for (i = 3; i >= 0; i--)
+            {
+                totalLength[i] = Convert.ToByte(fullLength % 0x80);
+                fullLength /= 0x80;
+            }
+
+            
+            try
+            {
+                using (FileStream fs = File.Open(filePath, FileMode.Open))
+                {
+                    using (BinaryReader br = new BinaryReader(fs))
+                    {
+                
+                    }
+                }
+            }
+            catch
+            {
+                //catch
+            }
+        }
+
         public string GetFrameData(string frameName)
         {
             return Encoding.UTF8.GetString(frames[frameName]);
@@ -189,24 +220,7 @@ namespace ID3Lite
             return frames[frameName];
         }
 
-        public void Write()
-        {
-            bool result = true;
-            try
-            {
-                using (FileStream fs = File.Open(filePath, FileMode.Open))
-                {
-                    using (BinaryReader br = new BinaryReader(fs))
-                    {
-                    }
-                }
-            }
-            catch
-            {
-                result = false;
-            }
-        }
-
+        #region Basic Infromation Getter
         public string Title {
             get { return GetFrameData("TIT2"); }
         }
@@ -226,8 +240,6 @@ namespace ID3Lite
             get { return GetFrameData("COMM"); }
         }
 
-
-
         public int Track
         {
             get { return Convert.ToInt32(GetFrameData("TRCK")); }
@@ -237,6 +249,7 @@ namespace ID3Lite
         {
             get { return Convert.ToInt32(GetFrameData("TYER")); }
         }
+        #endregion
 
     }
 }
