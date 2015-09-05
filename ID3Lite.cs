@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -180,8 +180,12 @@ namespace ID3Lite
                 Buffer.BlockCopy(data, i, _Image, 0, _Image.Length);
             }
         }
-
-        public void Write()
+        
+        public void SetFrameText(string FrameName, byte[] FrameData){
+            frames[FrameName] = frameData;
+        }
+        
+        public void Save()
         {
             byte[] data, totalLength = new byte[4];
             long fullLength;
