@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -182,13 +182,13 @@ namespace ID3Lite
         }
         
         public void SetFrameText(string FrameName, byte[] FrameData){
-            frames[FrameName] = frameData;
+            frames[FrameName] = FrameData;
         }
         
         public void Save()
         {
             byte[] data, totalLength = new byte[4];
-            long fullLength;
+            long fullLength = 0;
             int i;
 
             for (i = 3; i >= 0; i--)
