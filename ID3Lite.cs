@@ -187,13 +187,17 @@ namespace ID3Lite
         
         public void Save()
         {
-            byte[] data, totalLength = new byte[4];
+            byte[] id3Header = { 73, 68, 51, 4, 0, 0, 0, 0, 0, 0 };
             long fullLength = 0;
             int i;
 
-            for (i = 3; i >= 0; i--)
+            /*
+                id3 size calculation goes here
+            */
+
+            for (i = 9; i >= 6; i--)
             {
-                totalLength[i] = Convert.ToByte(fullLength % 0x80);
+                id3Header[i] = Convert.ToByte(fullLength % 0x80);
                 fullLength /= 0x80;
             }
 
