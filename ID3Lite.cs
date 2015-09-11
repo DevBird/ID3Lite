@@ -184,16 +184,17 @@ namespace ID3Lite
         public void SetFrameText(string FrameName, byte[] FrameData){
             frames[FrameName] = FrameData;
         }
-        
+
         public void Save()
         {
             byte[] id3Header = { 73, 68, 51, 4, 0, 0, 0, 0, 0, 0 };
-            long fullLength = 0;
+            long fullLength = 10;
             int i;
 
-            /*
-                id3 size calculation goes here
-            */
+            for (i = 0; i < frames.Count; i++) {
+                KeyValuePair<string, byte[]> pair = frames.Skip(i).First();
+                fullLength += 10 + pair.Value.Length;
+            }
 
             for (i = 9; i >= 6; i--)
             {
