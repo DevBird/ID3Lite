@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -187,7 +187,7 @@ namespace ID3Lite
 
         public void Save()
         {
-            byte[] id3Header = { 73, 68, 51, 4, 0, 0, 0, 0, 0, 0 };
+            byte[] id3Header;
             long fullLength = 10;
             int i;
 
@@ -195,6 +195,8 @@ namespace ID3Lite
                 KeyValuePair<string, byte[]> pair = frames.Skip(i).First();
                 fullLength += 10 + pair.Value.Length;
             }
+            
+            id3Header = new byte[fullLength]{ 73, 68, 51, 4, 0, };
 
             for (i = 9; i >= 6; i--)
             {
