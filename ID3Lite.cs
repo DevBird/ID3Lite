@@ -188,7 +188,7 @@ namespace ID3Lite
         public void Save()
         {
             byte[] id3Header;
-            long fullLength = 10;
+            int fullLength = 10;
             int i;
 
             for (i = 0; i < frames.Count; i++) {
@@ -196,7 +196,9 @@ namespace ID3Lite
                 fullLength += 10 + pair.Value.Length;
             }
             
-            id3Header = new byte[fullLength]{ 73, 68, 51, 4, 0, };
+            id3Header = new byte[4]{ 73, 68, 51, 4 };
+
+            Array.Resize(ref id3Header, fullLength);
 
             for (i = 9; i >= 6; i--)
             {
