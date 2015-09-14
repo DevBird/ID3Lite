@@ -14,3 +14,9 @@ Requires
 License
 -------
 ID3Lite follows MIT License
+
+
+Usage
+-----
+
+
